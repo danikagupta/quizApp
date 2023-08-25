@@ -1,2 +1,1 @@
-.streamlit
-old_versions
+.streamlit/secrets.toml
