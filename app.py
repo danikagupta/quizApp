@@ -34,6 +34,8 @@ def on_change_radio(slot):
   q=st.session_state.MAIN
   print(f"in on-change-radio, q is {q}, a1 is {a1}, a2 is {a2}, a3 is {a3}, a4 is {a4}")
   print(f"Radio Slot is {slot}")
+  # This is hacky. Rewrite as if-then-else-if-...
+  st.session_state["additional_info"]="Please select one of the available options above"
   if q==a1:
     print("Matched a1")
     st.session_state["additional_info"]=r1
@@ -46,7 +48,7 @@ def on_change_radio(slot):
   if q==a4:
     print("Matched a4")
     st.session_state["additional_info"]=r4
-  print("Finished matching in on-change-radio")
+  print(f"Finished matching in on-change-radio, with additional state={st.session_state.additional_info}")
 
 #
 # Full code
