@@ -9,9 +9,9 @@ def load_csv(url):
   df=pd.read_csv(url)
   return df
 
-  
 def on_change_difficulty():
-  print(f"Called on-change-difficulty")
+    print(f"Line 14 - difficulty is {difficulty}")
+    del st.session_state["question"]
 
 def on_change_menu(menu_ma):
     print(f"Passed parameter: {menu_ma}")
@@ -53,13 +53,18 @@ def on_change_radio(slot):
 #
 
 slot1=st.container()
-slot2=st.container()
 slot3=st.container()
+slot2=st.container()
 
 #print(f"++++START{st.__version__}")
 
+if "difficulty" not in st.session_state:
+  st.session_state.difficulty="Easy"
+
 with st.sidebar:
-  difficulty = st.select_slider('Difficulty', options=['Simple','Advanced'],on_change=on_change_difficulty)
+  difficulty = st.select_slider('Difficulty', options=['Easy','Medium','Hard'], on_change=on_change_difficulty)
+  st.session_state.difficulty=difficulty
+  
   menu = option_menu(None, 
                       ["Climate Models", 'Global Warming','Future Climate','Final Quiz'], 
                       icons=['house', 'gear','list-task','cloud-upload'], 
@@ -70,10 +75,10 @@ if slot2.button("Next question"):
   print("Next button pressed")
   del st.session_state["question"]
 
-
 if "question" not in st.session_state:
-  print("\n*** Getting next question\n")
+  print(f"\n*** Getting next question with difficulty {st.session_state.difficulty}\n")
   df=load_csv(st.secrets["QUESTION_SOURCE"])
+  df=df[df['Difficulty'] == st.session_state.difficulty]
   row=df.sample()
   dict_row=row.to_dict(orient='list')
   st.session_state["question"]=dict_row
@@ -89,12 +94,19 @@ r1=dict_row["R1"][0]
 r2=dict_row["R2"][0]
 r3=dict_row["R3"][0]
 r4=dict_row["R4"][0]
-q=slot1.radio(question,(a1,a2,a3,a4),key="MAIN",on_change=on_change_radio,kwargs={"slot":slot3})
+q=slot1.radio(question,(a1,a2,a3,a4),key="MAIN",index=3,on_change=on_change_radio,kwargs={"slot":slot3})
+st.markdown(
+    """<style>
+div[class*="stRadio"] > label > div[data-testid="stMarkdownContainer"] > p {
+    font-size: 24px;
+}
+    </style>
+    """, unsafe_allow_html=True)
 corr=dict_row["Correct"][0]
 if "additional_info" in st.session_state:
   additional=st.session_state["additional_info"]
   print(f"Found additional info: {additional}")
-  slot3.markdown(additional)
+  slot3.markdown(":blue["+additional+"]")
   del st.session_state["additional_info"]
 #print(f"Row is {dict_row}")
 #print(f"Question is {question}")
