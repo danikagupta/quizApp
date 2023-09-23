@@ -17,7 +17,9 @@ def on_change_menu(menu_ma):
     print(f"Passed parameter: {menu_ma}")
     key="menu_main"
     selection = st.session_state[key]
+    del st.session_state["question"]
     print(f"On-change-menu: Selection changed to {selection}")
+    st.session_state["category"]=selection
 
 def on_change_radio(slot):
   print(f"On-change-radio: Selection changed to {st.session_state.MAIN} ")
@@ -62,16 +64,19 @@ slot2=st.container()
 
 if "difficulty" not in st.session_state:
   st.session_state.difficulty="Easy"
+    
+if "category" not in st.session_state:
+  st.session_state["category"]="ALL"
 
 with st.sidebar:
   difficulty = st.select_slider('Difficulty', options=['Easy','Medium','Hard'], on_change=on_change_difficulty)
   st.session_state.difficulty=difficulty
   
   menu = option_menu(None, 
-                      ["Climate Models", 'Global Warming','Future Climate','Final Quiz'], 
-                      icons=['house', 'gear','list-task','cloud-upload'], 
+                      [ "AI Algorithms", "AI Application", "AI Ethics", "AI Terms", "Data and AI", "Types of AI","ALL"],
+                      icons=['house', 'gear','list-task','cloud-upload','house','house','house'], 
                       menu_icon="cast", 
-                      default_index=1,on_change=on_change_menu,key='menu_main')
+                      default_index=6,on_change=on_change_menu,key='menu_main')
 
 if slot2.button("Next question"):
   print("Next button pressed")
@@ -81,6 +86,8 @@ if "question" not in st.session_state:
   print(f"\n*** Getting next question with difficulty {st.session_state.difficulty}\n")
   df=load_csv(st.secrets["QUESTION_SOURCE"])
   df=df[df['Difficulty'] == st.session_state.difficulty]
+  if st.session_state.category != "ALL":
+    df=df[df['Category'] == st.session_state.category]
   row=df.sample()
   dict_row=row.to_dict(orient='list')
   st.session_state["question"]=dict_row
