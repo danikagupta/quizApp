@@ -103,7 +103,7 @@ r1=dict_row["R1"][0]
 r2=dict_row["R2"][0]
 r3=dict_row["R3"][0]
 r4=dict_row["R4"][0]
-q=slot1.radio(question,(a1,a2,a3,a4,"No answer"),key="MAIN",index=4,on_change=on_change_radio,kwargs={"slot":slot3})
+q=slot1.radio(question,(a1,a2,a3,a4),key="MAIN",index=None,on_change=on_change_radio,kwargs={"slot":slot3})
 st.markdown(
     """<style>
 div[class*="stRadio"] > label > div[data-testid="stMarkdownContainer"] > p {
